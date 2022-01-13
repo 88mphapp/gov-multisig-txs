@@ -23,7 +23,8 @@ def main():
     sablier = safe.contract("0xCD18eAa163733Da39c232722cBC4E8940b1D8888")
     dev_treasury = "0xfecBad5D60725EB6fd10f8936e02fa203fd27E4b"
     converter_role = 0x1cf336fddcc7dc48127faf7a5b80ee54fce73ef647eecd31c24bb6cce3ac3eef
-    mint_total = 1105274.13 * 1e18
+    mint_total = (246913.26 + 21666.67 + 28888.89 + 72222.20 + 12819.44 +
+                  101111.08 + 231111.04 + 231111.04 + 36111.10 + 7222.22 + 116097.19) * 1e18
 
     ######################################################################
     # Mint MPH
@@ -125,7 +126,7 @@ def main():
     safe.preview(safe_tx)
 
     # sign safe tx
-    # safe.sign_with_frame(safe_tx).hex()
+    safe.sign_with_frame(safe_tx).hex()
 
     # post tx
-    # safe.post_transaction(safe_tx)
+    safe.post_transaction(safe_tx)
