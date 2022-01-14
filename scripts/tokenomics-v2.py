@@ -22,6 +22,7 @@ def main():
     mph = safe.contract("0x8888801aF4d980682e47f1A9036e589479e835C5")
     sablier = safe.contract("0xCD18eAa163733Da39c232722cBC4E8940b1D8888")
     dev_treasury = "0xfecBad5D60725EB6fd10f8936e02fa203fd27E4b"
+    discretionary_fund = "0xA9B2a4F90d0eC7A7907C11e2a17eF345d04747bF"
     converter_role = 0x1cf336fddcc7dc48127faf7a5b80ee54fce73ef647eecd31c24bb6cce3ac3eef
     mint_total = (246913.26 + 21666.67 + 28888.89 + 72222.20 + 12819.44 +
                   101111.08 + 231111.04 + 231111.04 + 36111.10 + 7222.22 + 116097.19) * 1e18
@@ -46,12 +47,13 @@ def main():
     # send MPH to dev treasury
     # this includes:
     # 88mph SA immediate unlock: 12819.44
+    mph.transfer(dev_treasury, 12819.44 * 1e18)
+
     # 10-year vests:
     # 88mph foundation: 101111.08
     # Because Sablier doesn't support streaming to oneself, the tokens are sent to
-    # the dev treasury instead, which will handle creating a stream to the gov treasury
-
-    mph.transfer(dev_treasury, (12819.44 + 101111.08) * 1e18)
+    # a discretionary multisig, which will handle creating a stream to the gov treasury
+    mph.transfer(discretionary_fund, 101111.08 * 1e18)
 
     # stream MPH using Sablier
     # this includes:
