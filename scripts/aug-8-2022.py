@@ -30,14 +30,19 @@ def main():
     timelock.execute(default_proxy_admin.address, 0, timelock_tx_data,
                      brownie.convert.to_bytes(0), brownie.convert.to_bytes(0))
 
-    ######################################################################
-    # Add gauges to GaugeController
-    ######################################################################
-
+    # initialize vesting contract parameters
     with open('scripts/abi/Vesting03.json') as f:
         abi = json.loads(f.read())
     vesting_contract = Contract.from_abi(
         "Vesting03", vesting_proxy, abi, safe.account)
+    vesting_contract.updateDuration(7 * 24 * 60 * 60)
+    vesting_contract.setRewardDistributor(
+        "0xfecBad5D60725EB6fd10f8936e02fa203fd27E4b", True)
+
+    ######################################################################
+    # Add gauges to GaugeController
+    ######################################################################
+
     with open('scripts/abi/GaugeController.json') as f:
         abi = json.loads(f.read())
     gauge_controller = Contract.from_abi(
@@ -47,12 +52,18 @@ def main():
     gauge_controller.add_type("Ethereum", 1)
 
     # add the forwarder of each pool as a gauge
+    gauge_rewards_distributor = safe.contract(
+        "0x362A1844be1209073Fa31561c5c1d6D893255B42")
     for key in pool_keys:
+        if pool_map[key]["protocol"] == "Cream":
+            # skip all cream pools
+            continue
         pool_address = pool_map[key]["address"]
         forwarder_address = vesting_contract.forwarderOfPool(pool_address)
 
         vesting_contract.deployForwarderOfPool(pool_address)
         gauge_controller.add_gauge(forwarder_address, 0, 0)
+        gauge_rewards_distributor.setGaugeState(forwarder_address, False, True)
 
     ######################################################################
     # Submit transaction to Gnosis Safe
