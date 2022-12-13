@@ -36,7 +36,8 @@ def main():
         pool_address = pool_map[key]["address"]
         forwarder_address = vesting_contract.forwarderOfPool(pool_address)
 
-        if gauge_rewards_distributor.currentReward(forwarder_address) > 0:
+        _, reward = gauge_rewards_distributor.distributeReward.call(forwarder_address)
+        if reward > 0:
             # distribute reward to forwarder
             gauge_rewards_distributor.distributeReward(forwarder_address)
 
